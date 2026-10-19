@@ -1,0 +1,10 @@
+const menu=document.querySelector('.menu-toggle');
+const nav=document.querySelector('#main-nav');
+function closeMenu(){menu?.setAttribute('aria-expanded','false');nav?.classList.remove('open');}
+menu?.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu?.getAttribute('aria-expanded')==='true'){closeMenu();menu.focus();}});
+matchMedia('(min-width:701px)').addEventListener('change',closeMenu);
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));let count=0;document.querySelectorAll('[data-category]').forEach(card=>{card.hidden=button.dataset.filter!=='all'&&card.dataset.category!==button.dataset.filter;if(!card.hidden)count++;});document.querySelector('#filter-status').textContent=`Показано проектов: ${count}`;}));
+const form=document.querySelector('#brief');
+if(form){const service=new URLSearchParams(location.search).get('service');if([...form.elements.service.options].some(o=>o.value===service))form.elements.service.value=service;
+form.addEventListener('submit',event=>{event.preventDefault();const d=new FormData(form);const text=['WIPROD — Бриф проекта','',`Имя: ${d.get('name')}`,`Контакт: ${d.get('contact')}`,`Услуга: ${d.get('service')}`,`Бюджет: ${d.get('budget')}`,`Сроки: ${d.get('timeline')||'Обсуждаются'}`,'',`О проекте:\n${d.get('description')}`].join('\n');const url=URL.createObjectURL(new Blob(['\ufeff',text],{type:'text/plain;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='WIPROD-brief.txt';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);document.querySelector('#form-status').textContent='Бриф скачан. Заявка не отправлена — сохраните файл для передачи команде.';});}
